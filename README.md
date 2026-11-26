@@ -47,31 +47,37 @@ Standard cloud-based AI tools suffer from critical drawbacks:
 
 ## 🚀 Key Capabilities & Features
 
-### 1. 📖 Structured 4-Column PPT Presentation Decks
+### 1. 📖 Structured Multi-Style PPT Presentation Decks
 - **Syllabus Hierarchy**: Organized logically into `Subject ➔ Chapter ➔ Topic ➔ Step-by-Step Slides`.
-- **High-Impact Visual Architecture**: Clean white canvas (`#FAF9F6`), serif titles, and 4 side-by-side cards with distinctive top-accent borders:
-  - 🟢 **Card 1 (Forest Green `#2E6B4B`)**: Axioms, Sample Spaces & Formal Definitions.
-  - 🟠 **Card 2 (Terracotta `#C25E38`)**: Boundary Conditions, Theorems & Properties.
-  - 🔵 **Card 3 (Deep Teal `#2A6F72`)**: Step-by-Step Solved GATE Scenarios.
-  - 🔴 **Card 4 (Burnt Orange `#D96B27`)**: Frequent GATE Traps & NAT Numerical Revision.
-- **Footer Takeaway**: Italicized summary emphasizing exam edge cases and textbook citations (e.g. *mml-book.pdf Page 181*).
-- **Atomic Navigation**: `⬅ Previous Slide`, `Next Slide ➡`, numbered clickable slide pills (`👉 Slide 1`, `Slide 2`), and `Next Topic ⏩` with zero race conditions.
-- **⛶ Fullscreen Presentation Mode**: One-click toggle expanding the deck across the full display with enlarged typography for teaching and distraction-free study.
+- **Creative, Multi-Layout Pedagogical Engine**: Rather than generic repetitive boxes, each topic employs a specialized visual layout tailored to the material:
+  - 🔄 **Pipeline Flow (`pipeline`)**: Sequential multi-stage workflows (e.g. Bayes Theorem Prior ➔ Likelihood ➔ Evidence ➔ Posterior).
+  - ⚡ **Hero Split (`hero_split`)**: Large conceptual hero banner at top with two-column comparative deep dive below (e.g. Sample Space vs. Events, Gradient Descent).
+  - ⚖️ **Comparative Board (`comparison`)**: Side-by-side contrasting badges and bullet points (e.g. Mutually Exclusive vs. Independent Events, MLE vs. MAP).
+  - 💡 **Worked Numerical Example (`worked_example`)**: Amber problem statement card, numbered solution steps, and green highlighted final numerical answer (e.g. 2-dice rolls, directional derivative calculation).
+  - 🎯 **Exam Traps Dashboard (`traps_dashboard`)**: Red alert highlight cards detailing common exam pitfalls, notation confusions, and high-yield NAT calculation tips.
+  - 🗂️ **Standard Presentation Cards (`cards`)**: Crisp 4-card layout with distinct top-accent borders.
+- **Unified Slide & Topic Navigation**: `⬅ Previous Slide` and `Next Slide ➡` advance through individual slides; on the final slide, it seamlessly morphs into `Next Topic: <Title> ⏩`, automatically transitioning into the first slide of the subsequent topic with synchronized selectbox dropdown state.
+- **⛶ True Fullscreen Slideshow Mode**: Covers 100% of the viewport (hiding sidebar, headers, and footer) with a floating `🗗 Exit Slideshow` button for lecture presentations and focused study.
 
 ### 2. ❓ Offline AI Doubt Solver (RAG Pipeline)
 - **FAISS Vector Retrieval**: Semantic search across **2,418 pre-indexed textbook chunks** using FAISS `IndexFlatIP`.
+- **Deep-Dive Specialized Answers**: Comprehensive explanations for core syllabus concepts (e.g. Gradient Vectors, Hessian Matrices, Convexity, Kolmogorov Axioms, Eigenvalues, Rank-Nullity, Subspaces) with full formulas, geometric intuition, directional derivative derivations, and worked examples.
 - **Page-Level Grounding**: Every explanation cites the exact textbook source and page number.
-- **Zero-Latency Fallback**: If the local Ollama LLM is starting up, an intelligent local grounding engine answers in **under 0.2 seconds** using mathematical formulas and syllabus laws.
+- **Zero-Latency Fallback**: Operates 100% offline in **under 0.2 seconds** using local deterministic knowledge synthesis when Ollama is offline.
 
-### 3. 📝 119 Authentic Previous Year Questions (PYQs)
+### 3. 🎯 350+ Verified Practice Questions (50 per Subject)
+- **Massive Practice Bank**: Exactly **50 authentic GATE Multiple Choice Questions (MCQs)** for each of the 7 official subjects (**350 questions total**).
+- **Filter by Subject & Chapter**: Select any subject to practice all 50 questions or isolate specific chapters.
+- **Interactive Controls & Live Scoring**: Radio selection `(A)`, `(B)`, `(C)`, `(D)` with instant feedback (`✅ Correct` or `❌ Incorrect`), step-by-step mathematical explanations, pagination (`5`, `10`, `25`, or `50` questions per page), and real-time score/accuracy tracking.
+
+### 4. 📝 119 Authentic Previous Year Questions (PYQs)
 - Parsed questions from **GATE DA 2024**, **GATE DA 2025**, and **GATE CS** papers.
 - Filter by Subject (Probability, Linear Algebra, Calculus, ML, AI, DBMS) and Year.
 - Interactive radio selection with instant validation (Green ✅ / Red ❌) and comprehensive mathematical derivations.
 - Local SQLite persistence of question attempts and accuracy rates.
 
-### 4. ⚡ High-Yield Formula Cheat Sheets & Practice Tests
+### 5. ⚡ High-Yield Formula Cheat Sheets
 - Dedicated tabbed reference covering Probability & Statistics, Linear Algebra, and Optimization formulas.
-- Interactive multi-choice topic quizzes with instant feedback.
 
 ---
 
@@ -491,7 +497,7 @@ The system is tested and benchmarked on standard consumer hardware:
 
 ---
 
-## 🛠 Installation & Setup Guide
+## 🛠 Installation & Step-by-Step Terminal Run Guide
 
 ### 1. Prerequisites
 Ensure Python 3.10 to 3.13 is installed:
@@ -501,17 +507,19 @@ python --version
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/your-username/gate-ai-tutor.git
-cd gate-ai-tutor
+git clone https://github.com/saveenrai-z/gate-offlineragui.git
+cd gate-offlineragui
 ```
 
-### 3. Create a Virtual Environment
-```bash
-# Windows
+### 3. Create & Activate Virtual Environment
+**On Windows (PowerShell / CMD):**
+```powershell
 python -m venv venv
-venv\Scripts\activate
+.\venv\Scripts\activate
+```
 
-# Linux / macOS
+**On Linux / macOS:**
+```bash
 python3 -m venv venv
 source venv/bin/activate
 ```
@@ -521,40 +529,57 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-### 5. Launch the Application
-**Option A: Windows Batch File**
-Double-click `run.bat`.
+### 5. Running the Application from Terminal
+Choose any of the following methods to start the application:
 
-**Option B: Headless Launcher**
-```bash
-python start.py
-```
-
-**Option C: Direct Streamlit Execution**
+**Method 1: Direct Streamlit Run (Recommended for Development & Debugging)**
 ```bash
 streamlit run app.py
 ```
 
-Open your browser to:
+**Method 2: One-Click Windows Batch Script**
+```cmd
+run.bat
+```
+*(Or simply double-click `run.bat` in Windows File Explorer)*
+
+**Method 3: Headless Python Launcher**
+```bash
+python start.py
+```
+
+Once launched, open your web browser to:
 ```
 http://localhost:8501
 ```
 
-### 6. (Optional) Run with Ollama Local LLM
-To enable local generative inference:
-1. Download and install [Ollama](https://ollama.com/).
-2. Pull the model:
-   ```bash
-   ollama pull mistral:3b
-   ```
-3. Ensure Ollama is running (`ollama serve`). The application will automatically detect and connect to the daemon.
+---
+
+## 🔌 100% Complete Offline Mode Guide
+
+The system is engineered to run **completely severed from the internet** (zero Wi-Fi / airplane mode):
+
+### How Offline Operation is Guaranteed:
+1. **Local FAISS Vector Index (`vector_db/gate_faiss.index`)**:
+   - All 2,418 textbook chunks are pre-embedded and stored locally.
+   - Vector similarity search (`IndexFlatIP`) executes strictly in local CPU memory without network requests.
+2. **Local HuggingFace Cache (`modules/embeddings.py`)**:
+   - Configured with `HF_HUB_OFFLINE = 1`, `TRANSFORMERS_OFFLINE = 1`, and `local_files_only = True`.
+   - The `all-MiniLM-L6-v2` embedding model runs directly from your local HuggingFace cache without checking remote servers or timing out.
+3. **Local SQLite Relational Database (`database/gate_tutor.db`)**:
+   - Stores the complete 7-subject, 14-chapter syllabus structure, student progress, and 119 previous year questions locally.
+4. **Local Practice Question Bank (`modules/practice_questions_data.py`)**:
+   - All 350+ practice questions and step-by-step mathematical solutions are embedded directly in local Python structures.
+5. **Dual LLM Architecture for Doubts**:
+   - **Mode A (With Local Ollama)**: Install [Ollama](https://ollama.com/) locally and run `ollama run mistral` (or `mistral:3b`). The application communicates locally over `http://localhost:11434` with 0% external cloud usage.
+   - **Mode B (Without Ollama / Pure Offline Fallback)**: If Ollama is not installed or turned off, the built-in deterministic grounding engine generates rigorous, step-by-step mathematical solutions (with KaTeX formulas and textbook citations) in **< 0.2 seconds** locally!
 
 ---
 
 ## ❓ Troubleshooting & Frequently Asked Questions
 
-#### Q1: Does the application require an active internet connection?
-**No.** All components—the FAISS vector database (2,418 chunks), SentenceTransformers embedding cache, SQLite database, PyMuPDF PDF extractors, and presentation generation engine—run **100% offline** on your local machine.
+#### Q1: Can I turn off my Wi-Fi and still use everything?
+**Yes, 100%.** Disconnect your internet connection, open terminal, run `streamlit run app.py`, and all slides, doubt solver, 350+ practice questions, 119 PYQs, and formula sheets will work at full speed.
 
 #### Q2: What happens if Ollama is not installed or the model is still downloading?
 The application includes an **offline grounded synthesis engine**. If Ollama is unavailable, the tutor synthesizes structured explanations with formulas and textbook citations from retrieved FAISS chunks without throwing errors or timing out.
