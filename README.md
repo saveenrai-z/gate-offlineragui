@@ -198,7 +198,7 @@ The primary frontend application written in Streamlit.
   2. `📖 Chapter Teachings`: The interactive PPT presentation deck.
   3. `❓ Ask Doubts`: Dedicated offline AI doubt solver.
   4. `📝 Previous Year Questions`: Interactive exam solver for 119 PYQs.
-  5. `🎯 Practice Questions`: Practice MCQs with immediate validation.
+  5. `🎯 Practice Questions`: Comprehensive bank of 350+ verified GATE MCQs (50+ questions per subject across all 7 subjects) with pagination, instant validation, step-by-step mathematical solutions, and real-time score/accuracy tracking.
   6. `⚡ Formula Cheat Sheets`: Fast formula reference tabs.
 - **State & Navigation**: Manages `st.session_state` with callback functions (`cb_next_slide`, `cb_prev_slide`, `cb_jump_slide`, `cb_next_topic`, `cb_toggle_fullscreen`) ensuring reliable state transitions.
 

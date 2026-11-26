@@ -11,6 +11,10 @@ from modules.vector_store import VectorStore
 from modules.llm_handler import LLMHandler
 from modules.rag_pipeline import RAGPipeline
 from modules.presentation_deck import PresentationDeckGenerator
+from modules.practice_questions_data import (
+    get_practice_questions_by_subject,
+    get_practice_questions_by_chapter
+)
 
 # Page Configuration
 st.set_page_config(
@@ -746,45 +750,134 @@ elif st.session_state["nav_page"] == "📝 Previous Year Questions":
                 st.markdown("---")
 
 # -------------------------------------------------------------
-# 5. PRACTICE QUESTIONS
+# 5. PRACTICE QUESTIONS (350+ VERIFIED GATE QUESTIONS - 50 PER SUBJECT)
 # -------------------------------------------------------------
 elif st.session_state["nav_page"] == "🎯 Practice Questions":
     st.title("🎯 Topic Practice MCQs")
-    st.caption("Consolidate concepts through verified exam questions.")
+    st.caption("Consolidate concepts through 350+ official syllabus-aligned GATE practice questions (50+ per subject).")
     st.write("")
+
+    if "prac_attempts" not in st.session_state:
+        st.session_state["prac_attempts"] = {}
 
     subjects = get_all_subjects()
-    sel_sub = st.selectbox("Select Subject", [s["name"] for s in subjects], key="prac_sub")
+    
+    col_s1, col_s2 = st.columns([1, 1])
+    with col_s1:
+        sel_sub = st.selectbox("Select Subject", [s["name"] for s in subjects], key="prac_sub")
     sub_obj = next(s for s in subjects if s["name"] == sel_sub)
     chaps = get_chapters_by_subject(sub_obj["id"])
-    sel_chap = st.selectbox("Select Chapter", [c["title"] for c in chaps] if chaps else ["None"], key="prac_chap")
+    
+    with col_s2:
+        chap_options = ["All Chapters (Complete 50-Question Bank)"] + [c["title"] for c in chaps]
+        sel_chap = st.selectbox("Select Chapter", chap_options, key="prac_chap")
+
+    # Fetch Questions from comprehensive 350-question bank
+    if sel_chap.startswith("All Chapters"):
+        questions = get_practice_questions_by_subject(sel_sub)
+    else:
+        questions = get_practice_questions_by_chapter(sel_sub, sel_chap)
+
+    total_q = len(questions)
+
+    # Score Metrics
+    attempted_count = sum(1 for q in questions if q["id"] in st.session_state["prac_attempts"])
+    correct_count = sum(1 for q in questions if st.session_state["prac_attempts"].get(q["id"]) is True)
+    accuracy_pct = (correct_count / attempted_count * 100) if attempted_count > 0 else 0.0
 
     st.markdown(f"""
-    <div style="background-color: #1E293B; padding: 20px; border-radius: 8px; border: 1px solid #334155;">
-        <h4 style="margin-top: 0; color: #F8FAFC;">Practice Quiz for {sel_chap}</h4>
-        <p style="color: #94A3B8;">
-            Select options below to test your theoretical and mathematical accuracy.
-        </p>
+    <div style="background-color: #1E293B; padding: 18px 24px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;">
+            <div>
+                <div style="font-size: 0.8rem; font-weight: 800; letter-spacing: 1px; color: #38BDF8;">PRACTICE QUESTION BANK</div>
+                <div style="font-size: 1.25rem; font-weight: 700; color: #F8FAFC; margin-top: 4px;">{sel_sub}</div>
+                <div style="font-size: 0.9rem; color: #94A3B8;">{sel_chap} &nbsp;•&nbsp; <strong>{total_q} Questions Available</strong></div>
+            </div>
+            <div style="display: flex; gap: 20px; text-align: center;">
+                <div style="background-color: #0F172A; padding: 8px 16px; border-radius: 8px; border: 1px solid #334155;">
+                    <div style="font-size: 0.75rem; color: #94A3B8; text-transform: uppercase;">Total Questions</div>
+                    <div style="font-size: 1.3rem; font-weight: 800; color: #38BDF8;">{total_q}</div>
+                </div>
+                <div style="background-color: #0F172A; padding: 8px 16px; border-radius: 8px; border: 1px solid #334155;">
+                    <div style="font-size: 0.75rem; color: #94A3B8; text-transform: uppercase;">Attempted</div>
+                    <div style="font-size: 1.3rem; font-weight: 800; color: #F59E0B;">{attempted_count}</div>
+                </div>
+                <div style="background-color: #0F172A; padding: 8px 16px; border-radius: 8px; border: 1px solid #334155;">
+                    <div style="font-size: 0.75rem; color: #94A3B8; text-transform: uppercase;">Score / Accuracy</div>
+                    <div style="font-size: 1.3rem; font-weight: 800; color: #10B981;">{correct_count}/{attempted_count} ({accuracy_pct:.0f}%)</div>
+                </div>
+            </div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
-    st.write("")
 
-    st.markdown("**Q1. If events A and B are mutually exclusive with P(A) > 0 and P(B) > 0, what is P(A|B)?**")
-    ans_q1 = st.radio("Options:", ["(A) P(A)", "(B) 0", "(C) 1", "(D) P(A) · P(B)"], key="quiz_q1")
-    if st.button("Check Q1 Answer", key="btn_check_q1"):
-        if "(B)" in ans_q1:
-            st.success("✅ Correct! Since A ∩ B = ∅, P(A ∩ B) = 0. Therefore P(A|B) = P(A ∩ B) / P(B) = 0.")
-        else:
-            st.error("❌ Incorrect. The correct answer is (B) 0. Mutually exclusive events cannot occur simultaneously.")
+    if total_q == 0:
+        st.warning("No questions found for this selection.")
+    else:
+        # Pagination controls
+        c_page_size, c_page_num = st.columns([1, 2])
+        with c_page_size:
+            page_size = st.selectbox("Questions per Page", [5, 10, 25, 50], index=1, key="prac_page_size")
 
-    st.markdown("---")
-    st.markdown("**Q2. Under what condition is the union of two vector subspaces U and W guaranteed to be a subspace?**")
-    ans_q2 = st.radio("Options:", ["(A) Always", "(B) If and only if U ⊆ W or W ⊆ U", "(C) If U ∩ W = {0}", "(D) Never"], key="quiz_q2")
-    if st.button("Check Q2 Answer", key="btn_check_q2"):
-        if "(B)" in ans_q2:
-            st.success("✅ Correct! A union of two subspaces is itself a subspace if and only if one is contained within the other.")
-        else:
-            st.error("❌ Incorrect. The correct answer is (B). If neither is contained in the other, vector addition escapes the union.")
+        total_pages = (total_q + page_size - 1) // page_size
+        with c_page_num:
+            page_labels = [f"Page {p + 1} of {total_pages} (Questions {p * page_size + 1} - {min((p + 1) * page_size, total_q)})" for p in range(total_pages)]
+            cur_page = st.selectbox("Navigate Page", range(total_pages), format_func=lambda p: page_labels[p], key="prac_page_idx")
+
+        start_idx = cur_page * page_size
+        end_idx = min(start_idx + page_size, total_q)
+        page_questions = questions[start_idx:end_idx]
+
+        st.write("")
+
+        for idx, q in enumerate(page_questions):
+            q_num = start_idx + idx + 1
+            st.markdown(f"""
+            <div style="background-color: #0F172A; border: 1px solid #1E293B; border-left: 5px solid #3B82F6; border-radius: 8px; padding: 14px 18px; margin-top: 14px; margin-bottom: 10px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                    <span style="font-size: 0.8rem; font-weight: 800; letter-spacing: 1px; color: #60A5FA;">QUESTION {q_num} OF {total_q}</span>
+                    <span style="font-size: 0.78rem; background-color: #1E293B; padding: 2px 8px; border-radius: 4px; color: #94A3B8;">{q.get('chapter', '')}</span>
+                </div>
+                <div style="font-size: 1.05rem; font-weight: 600; color: #F8FAFC; line-height: 1.5;">{q['question']}</div>
+            </div>
+            """, unsafe_allow_html=True)
+
+            ans_choice = st.radio(
+                f"Choose your answer for Q{q_num}:",
+                q["options"],
+                key=f"quiz_radio_{q['id']}"
+            )
+
+            c_btn1, c_btn2 = st.columns([1, 4])
+            with c_btn1:
+                check_clicked = st.button(f"Check Answer", key=f"btn_check_{q['id']}")
+
+            if check_clicked:
+                selected_letter = ans_choice.strip()[1]  # Extract 'A', 'B', 'C', 'D' from '(A) ...'
+                correct_letter = q["correct_answer"].strip()
+                is_correct = (selected_letter == correct_letter)
+                st.session_state["prac_attempts"][q["id"]] = is_correct
+
+                if is_correct:
+                    st.success(f"✅ Correct! The correct option is ({correct_letter}).")
+                else:
+                    st.error(f"❌ Incorrect. You chose ({selected_letter}), but the correct answer is ({correct_letter}).")
+
+                if q.get("explanation"):
+                    st.info(f"**Step-by-step Mathematical Solution:**\n\n{q['explanation']}")
+
+            elif q["id"] in st.session_state["prac_attempts"]:
+                # Show status if already attempted earlier
+                prev_correct = st.session_state["prac_attempts"][q["id"]]
+                correct_letter = q["correct_answer"].strip()
+                if prev_correct:
+                    st.success(f"✅ Previously Answered Correctly! ({correct_letter})")
+                else:
+                    st.error(f"❌ Previously Answered Incorrectly. Correct answer is ({correct_letter}).")
+                if q.get("explanation"):
+                    st.info(f"**Step-by-step Mathematical Solution:**\n\n{q['explanation']}")
+
+            st.markdown("<hr style='border: 0; border-top: 1px solid #1E293B; margin: 18px 0;'>", unsafe_allow_html=True)
 
 # -------------------------------------------------------------
 # 6. FORMULA CHEAT SHEETS
